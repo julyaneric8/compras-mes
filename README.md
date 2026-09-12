@@ -155,7 +155,7 @@ O arquivo do banco de dados não é enviado para o repositório e é criado loca
 ### 1. Clone o repositório
 
 ```bash
-git clone URL_DO_REPOSITORIO
+https://github.com/julyaneric8/compras-mes.git
 ```
 
 Entre na pasta:
