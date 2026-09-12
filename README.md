@@ -1,16 +1,22 @@
 # 🛒 Compras do Mês
 
-Aplicação web para planejamento e controle de compras mensais, desenvolvida com **Python, Flask e SQLite**.
+Aplicação web para organização e controle de compras mensais, desenvolvida com **Python, Flask e SQLite**.
 
-O sistema permite organizar produtos por mês, definir um orçamento, acompanhar os gastos e manter um histórico das compras anteriores.
+O projeto permite criar listas de compras separadas por mês, definir um orçamento, acompanhar os gastos e consultar o histórico dos meses anteriores.
 
-A proposta do projeto é reunir **lista de compras e controle financeiro** em uma interface simples, responsiva e fácil de utilizar.
+A proposta é reunir **organização de compras e controle financeiro** em uma interface simples, responsiva e intuitiva.
 
 ---
 
 ## 📸 Preview
 
-![Preview do Compras do Mês](screenshots/compras-mes.png)
+<p align="center">
+  <img
+    src="screenshots/compras-mes.png"
+    alt="Interface do projeto Compras do Mês"
+    width="900"
+  >
+</p>
 
 ---
 
@@ -18,23 +24,23 @@ A proposta do projeto é reunir **lista de compras e controle financeiro** em um
 
 ### 🛒 Lista de compras
 
-- Adicionar produtos
-- Editar produtos cadastrados
-- Excluir produtos
-- Informar preço e quantidade
-- Organizar produtos por categoria
-- Marcar produtos como comprados
-- Pesquisar produtos por nome ou categoria
-- Filtrar entre todos, pendentes e comprados
+- Cadastro de produtos
+- Edição de produtos
+- Exclusão de produtos
+- Preço e quantidade por item
+- Organização por categorias
+- Marcação de produtos como comprados
+- Pesquisa por nome ou categoria
+- Filtros para todos, pendentes e comprados
 
 ### 💰 Controle de orçamento
 
-- Definição de orçamento mensal
+- Orçamento independente para cada mês
 - Cálculo automático do valor gasto
 - Cálculo do valor restante
-- Indicador percentual de uso do orçamento
-- Alerta visual quando o orçamento é ultrapassado
-- Orçamento independente para cada mês
+- Percentual de utilização do orçamento
+- Barra de progresso
+- Indicação visual quando o orçamento é ultrapassado
 
 ### 📊 Análise de gastos
 
@@ -48,26 +54,24 @@ A proposta do projeto é reunir **lista de compras e controle financeiro** em um
 
 ### 📅 Organização mensal
 
-Cada produto pertence a um determinado **mês e ano**.
+Os produtos são associados a um **mês e ano**.
 
-Ao navegar para outro mês, uma nova lista pode ser criada sem apagar as compras anteriores.
-
-Isso permite consultar novamente períodos passados e construir um histórico de gastos ao longo do tempo.
+Ao navegar entre os meses, cada período mantém sua própria lista de compras e orçamento, permitindo consultar registros anteriores sem apagar os dados já cadastrados.
 
 ---
 
 ## 🖥️ Interface
 
-A interface foi desenvolvida com foco em simplicidade e legibilidade.
+A interface foi desenvolvida com foco em simplicidade, organização e legibilidade.
 
-O layout utiliza:
+O projeto utiliza:
 
 - design minimalista;
 - paleta em tons de verde;
 - componentes em cards;
-- indicadores visuais de orçamento;
+- indicadores visuais;
 - barras de progresso;
-- layout responsivo para diferentes tamanhos de tela.
+- layout responsivo.
 
 ---
 
@@ -78,10 +82,10 @@ O layout utiliza:
 | Python | Lógica da aplicação |
 | Flask | Backend e rotas HTTP |
 | SQLite | Persistência dos dados |
-| Jinja2 | Renderização dinâmica das páginas |
+| Jinja2 | Renderização dinâmica |
 | HTML5 | Estrutura da interface |
 | CSS3 | Estilização e responsividade |
-| JavaScript | Interações da interface |
+| JavaScript | Interações no frontend |
 
 ---
 
@@ -89,46 +93,49 @@ O layout utiliza:
 
 ### Valores monetários em centavos
 
-Os valores financeiros são armazenados no SQLite como **números inteiros representando centavos**.
+Os valores financeiros são armazenados no banco de dados como **números inteiros representando centavos**.
 
-Por exemplo:
+Exemplo:
 
 ```text
 R$ 27,90 → 2790
 ```
 
-Essa abordagem evita problemas de precisão que podem acontecer ao utilizar números de ponto flutuante para cálculos financeiros.
+Essa abordagem evita problemas de precisão associados ao uso de números de ponto flutuante em cálculos financeiros.
 
-No backend, valores informados pelo usuário também são tratados utilizando `Decimal` antes da conversão para centavos.
+No backend, os valores recebidos também são tratados com `Decimal` antes de serem convertidos para centavos.
 
-### Histórico sem duplicação de dados
+### Histórico mensal
 
-O histórico não utiliza uma tabela separada.
+Cada produto possui informações de **mês e ano**.
 
-Cada produto possui informações de **mês e ano**, permitindo que os totais históricos sejam calculados diretamente a partir dos registros existentes.
+Com isso, o histórico pode ser calculado diretamente a partir dos produtos cadastrados, sem a necessidade de duplicar os dados em uma tabela separada.
 
-### Separação por responsabilidade
+### Separação de responsabilidades
 
-A aplicação utiliza:
+O projeto mantém diferentes responsabilidades entre as tecnologias:
 
 ```text
-Flask/Python → regras e cálculos
-SQLite       → armazenamento
-Jinja2/HTML  → apresentação dos dados
-CSS          → aparência
-JavaScript   → interações da interface
+Python / Flask → regras, cálculos e rotas
+SQLite        → armazenamento dos dados
+Jinja2 / HTML → estrutura e apresentação
+CSS           → aparência e responsividade
+JavaScript    → interações da interface
 ```
 
-Os cálculos financeiros principais permanecem no backend.
+Os principais cálculos financeiros são realizados no backend.
 
 ---
 
-## 📁 Estrutura
+## 📁 Estrutura do projeto
 
 ```text
 compras-mes/
 │
 ├── database/
+│
+├── screenshots/
+│   └── compras-mes.png
 │
 ├── static/
 │   ├── css/
@@ -146,16 +153,20 @@ compras-mes/
 └── requirements.txt
 ```
 
-O arquivo do banco de dados não é enviado para o repositório e é criado localmente pela aplicação.
+O arquivo local do banco de dados SQLite não é incluído no repositório.
 
 ---
 
-## 🚀 Como executar
+## 🚀 Executando o projeto localmente
 
-### 1. Clone o repositório
+### Pré-requisitos
+
+É necessário ter o **Python** instalado no computador.
+
+### 1. Baixe ou clone o projeto
 
 ```bash
-https://github.com/julyaneric8/compras-mes.git
+git clone https://github.com/julyaneric8/compras-mes.git
 ```
 
 Entre na pasta:
@@ -164,7 +175,7 @@ Entre na pasta:
 cd compras-mes
 ```
 
-### 2. Crie um ambiente virtual
+### 2. Crie o ambiente virtual
 
 ```bash
 python -m venv .venv
@@ -172,13 +183,13 @@ python -m venv .venv
 
 ### 3. Ative o ambiente virtual
 
-No Windows:
+#### Windows
 
 ```bash
 .venv\Scripts\activate
 ```
 
-No Linux/macOS:
+#### Linux/macOS
 
 ```bash
 source .venv/bin/activate
@@ -196,21 +207,21 @@ pip install -r requirements.txt
 python app.py
 ```
 
-### 6. Abra no navegador
+### 6. Acesse localmente
+
+Com a aplicação em execução, abra no navegador:
 
 ```text
 http://127.0.0.1:5000
 ```
 
-O banco SQLite será criado automaticamente na primeira execução.
-
 ---
 
 ## 🗃️ Banco de dados
 
-O projeto utiliza **SQLite**, portanto não é necessário instalar ou configurar um servidor de banco de dados separado.
+O projeto utiliza **SQLite**, portanto não é necessário configurar um servidor de banco de dados separado.
 
-Os principais dados armazenados são:
+As principais informações armazenadas para cada produto são:
 
 ```text
 Produto
@@ -223,40 +234,35 @@ Produto
 └── status de comprado
 ```
 
-Também são armazenados os orçamentos definidos para cada mês.
+Os orçamentos mensais também são armazenados no banco de dados.
 
 ---
 
 ## 📱 Responsividade
 
-A interface foi preparada para funcionar em:
-
-- computadores;
-- tablets;
-- smartphones.
-
-Os componentes são reorganizados automaticamente de acordo com o espaço disponível na tela.
+A interface foi desenvolvida para se adaptar a diferentes tamanhos de tela, incluindo computadores, tablets e dispositivos móveis.
 
 ---
 
 ## 🎯 Objetivo do projeto
 
-Este projeto foi desenvolvido como prática de **desenvolvimento web full stack**, trabalhando conceitos como:
+O projeto foi desenvolvido para colocar em prática conceitos de desenvolvimento web, incluindo:
 
-- criação de aplicações com Flask;
-- rotas HTTP;
+- desenvolvimento backend com Flask;
+- criação de rotas HTTP;
 - formulários;
 - operações CRUD;
 - persistência com SQLite;
 - consultas e agregações SQL;
 - manipulação de valores monetários;
-- renderização com Jinja2;
+- templates com Jinja2;
 - JavaScript no frontend;
+- estilização com CSS;
 - design responsivo;
-- organização e evolução de um projeto web.
+- organização de um projeto web.
 
 ---
 
-## 📄 Licença
+## 📄 Sobre
 
 Projeto desenvolvido para fins de estudo e portfólio.
