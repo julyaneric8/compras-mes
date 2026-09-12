@@ -1,0 +1,923 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Compras do Mês</title>
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='css/style.css') }}"
+    >
+</head>
+
+<body>
+
+    <div class="app">
+
+        <header class="header">
+
+            <div>
+                <span class="header-label">
+                    CONTROLE MENSAL
+                </span>
+
+                <h1>
+                    Compras do mês
+                </h1>
+
+                <p>
+                    Organize sua compra sem perder
+                    o controle do orçamento.
+                </p>
+            </div>
+
+
+            <div class="month-navigation">
+
+                <a
+                    class="month-button"
+                    href="{{ url_for(
+                        'index',
+                        mes=mes_anterior,
+                        ano=ano_anterior
+                    ) }}"
+                    aria-label="Mês anterior"
+                >
+                    ‹
+                </a>
+
+
+                <div class="month-current">
+
+                    <span>
+                        {{ nome_mes }}
+                    </span>
+
+                    <strong>
+                        {{ ano }}
+                    </strong>
+
+                </div>
+
+
+                <a
+                    class="month-button"
+                    href="{{ url_for(
+                        'index',
+                        mes=proximo_mes,
+                        ano=proximo_ano
+                    ) }}"
+                    aria-label="Próximo mês"
+                >
+                    ›
+                </a>
+
+            </div>
+
+        </header>
+
+
+        <section class="summary">
+
+            <div class="summary-card budget-card">
+
+                <span>
+                    Orçamento
+                </span>
+
+                <strong>
+                    {{ orcamento }}
+                </strong>
+
+                <button
+                    type="button"
+                    class="edit-budget-button"
+                    id="open-budget"
+                >
+                    Alterar orçamento
+                </button>
+
+            </div>
+
+
+            <div class="summary-card">
+
+                <span>
+                    Gasto
+                </span>
+
+                <strong>
+                    {{ gasto }}
+                </strong>
+
+            </div>
+
+
+            <div class="summary-card">
+
+                <span>
+                    Restante
+                </span>
+
+                <strong
+                    class="{% if porcentagem > 100 %}negative{% else %}remaining{% endif %}"
+                >
+                    {{ restante }}
+                </strong>
+
+            </div>
+
+        </section>
+
+
+        <section class="budget-progress">
+
+            <div class="progress-info">
+
+                <span>
+                    Uso do orçamento
+                </span>
+
+                <strong>
+                    {{ "%.1f"|format(porcentagem)|replace(".", ",") }}%
+                </strong>
+
+            </div>
+
+
+            <div class="progress-bar">
+
+                <div
+                    id="budget-progress-value"
+                    class="progress-value {% if porcentagem > 100 %}over-budget{% endif %}"
+                    data-progress="{{ porcentagem_barra }}"
+                ></div>
+
+            </div>
+
+        </section>
+
+
+        <div class="content-grid">
+
+            <section class="card">
+
+                <div class="section-header">
+
+                    <div>
+                        <span class="section-label">
+                            NOVO ITEM
+                        </span>
+
+                        <h2>
+                            Adicionar produto
+                        </h2>
+                    </div>
+
+                </div>
+
+
+                <form
+                    class="product-form"
+                    action="{{ url_for('adicionar_produto') }}"
+                    method="POST"
+                >
+
+                    <input
+                        type="hidden"
+                        name="mes"
+                        value="{{ mes }}"
+                    >
+
+                    <input
+                        type="hidden"
+                        name="ano"
+                        value="{{ ano }}"
+                    >
+
+
+                    <div class="form-group full">
+
+                        <label for="product">
+                            Produto
+                        </label>
+
+                        <input
+                            type="text"
+                            id="product"
+                            name="produto"
+                            placeholder="Ex: Arroz"
+                            autocomplete="off"
+                            required
+                        >
+
+                    </div>
+
+
+                    <div class="form-group full">
+
+                        <label for="category">
+                            Categoria
+                        </label>
+
+                        <select
+                            id="category"
+                            name="categoria"
+                        >
+
+                            <option value="Alimentação">
+                                Alimentação
+                            </option>
+
+                            <option value="Limpeza">
+                                Limpeza
+                            </option>
+
+                            <option value="Higiene">
+                                Higiene
+                            </option>
+
+                            <option value="Bebidas">
+                                Bebidas
+                            </option>
+
+                            <option value="Outros">
+                                Outros
+                            </option>
+
+                        </select>
+
+                    </div>
+
+
+                    <div class="form-row">
+
+                        <div class="form-group">
+
+                            <label for="price">
+                                Preço
+                            </label>
+
+                            <input
+                                type="text"
+                                id="price"
+                                name="preco"
+                                placeholder="R$ 0,00"
+                                inputmode="decimal"
+                                autocomplete="off"
+                                required
+                            >
+
+                        </div>
+
+
+                        <div class="form-group">
+
+                            <label for="quantity">
+                                Quantidade
+                            </label>
+
+                            <input
+                                type="number"
+                                id="quantity"
+                                name="quantidade"
+                                value="1"
+                                min="1"
+                                required
+                            >
+
+                        </div>
+
+                    </div>
+
+
+                    <button
+                        type="submit"
+                        class="add-button"
+                    >
+                        <span>+</span>
+                        Adicionar à compra
+                    </button>
+
+                </form>
+
+            </section>
+
+
+            <section class="card shopping-card">
+
+                <div class="section-header">
+
+                    <div>
+                        <span class="section-label">
+                            CARRINHO
+                        </span>
+
+                        <h2>
+                            Minha compra
+                        </h2>
+                    </div>
+
+
+                    <span class="item-count">
+
+                        {% if quantidade_produtos > 0 %}
+
+                            {{ quantidade_comprados }}
+                            de
+                            {{ quantidade_produtos }}
+                            comprados
+
+                        {% else %}
+
+                            0 itens
+
+                        {% endif %}
+
+                    </span>
+
+                </div>
+
+
+                {% if produtos %}
+
+                    <div class="shopping-tools">
+
+                        <div class="search-box">
+
+                            <span class="search-icon">
+                                ⌕
+                            </span>
+
+                            <input
+                                type="search"
+                                id="product-search"
+                                placeholder="Buscar produto..."
+                                autocomplete="off"
+                                aria-label="Buscar produto"
+                            >
+
+                        </div>
+
+
+                        <div
+                            class="filter-buttons"
+                            aria-label="Filtrar produtos"
+                        >
+
+                            <button
+                                type="button"
+                                class="filter-button active"
+                                data-filter="all"
+                            >
+                                Todos
+                            </button>
+
+                            <button
+                                type="button"
+                                class="filter-button"
+                                data-filter="pending"
+                            >
+                                Pendentes
+                            </button>
+
+                            <button
+                                type="button"
+                                class="filter-button"
+                                data-filter="purchased"
+                            >
+                                Comprados
+                            </button>
+
+                        </div>
+
+                    </div>
+
+
+                    <div
+                        class="filter-empty"
+                        id="filter-empty"
+                    >
+                        <span>⌕</span>
+
+                        <p>
+                            Nenhum produto encontrado.
+                        </p>
+                    </div>
+
+
+                    <div class="shopping-list">
+
+                        {% for produto in produtos %}
+
+                            <article
+                                class="shopping-item {% if produto.comprado %}purchased{% endif %}"
+                                data-name="{{ produto.nome|lower }}"
+                                data-category="{{ produto.categoria|lower }}"
+                                data-status="{% if produto.comprado %}purchased{% else %}pending{% endif %}"
+                            >
+
+                                <form
+                                    action="{{ url_for(
+                                        'alternar_comprado',
+                                        produto_id=produto.id
+                                    ) }}"
+                                    method="POST"
+                                    class="check-form"
+                                >
+
+                                    <input
+                                        type="hidden"
+                                        name="mes"
+                                        value="{{ mes }}"
+                                    >
+
+                                    <input
+                                        type="hidden"
+                                        name="ano"
+                                        value="{{ ano }}"
+                                    >
+
+                                    <button
+                                        type="submit"
+                                        class="check-button {% if produto.comprado %}checked{% endif %}"
+                                        aria-label="{% if produto.comprado %}Desmarcar {{ produto.nome }}{% else %}Marcar {{ produto.nome }} como comprado{% endif %}"
+                                    >
+                                        {% if produto.comprado %}
+                                            ✓
+                                        {% endif %}
+                                    </button>
+
+                                </form>
+
+
+                                <div class="product-info">
+
+                                    <div class="product-top">
+
+                                        <h3>
+                                            {{ produto.nome }}
+                                        </h3>
+
+                                        <span class="category-tag">
+                                            {{ produto.categoria }}
+                                        </span>
+
+                                    </div>
+
+
+                                    <p>
+                                        {{ produto.quantidade }}
+                                        ×
+                                        {{ produto.preco_formatado }}
+                                    </p>
+
+                                </div>
+
+
+                                <div class="product-side">
+
+                                    <strong class="product-total">
+                                        {{ produto.subtotal_formatado }}
+                                    </strong>
+
+
+                                    <div class="product-actions">
+
+                                        <button
+                                            type="button"
+                                            class="action-button edit-product"
+                                            data-id="{{ produto.id }}"
+                                            data-name="{{ produto.nome }}"
+                                            data-category="{{ produto.categoria }}"
+                                            data-price="{{ produto.preco_edicao }}"
+                                            data-quantity="{{ produto.quantidade }}"
+                                        >
+                                            Editar
+                                        </button>
+
+
+                                        <form
+                                            action="{{ url_for(
+                                                'excluir_produto',
+                                                produto_id=produto.id
+                                            ) }}"
+                                            method="POST"
+                                            class="delete-form"
+                                        >
+
+                                            <input
+                                                type="hidden"
+                                                name="mes"
+                                                value="{{ mes }}"
+                                            >
+
+                                            <input
+                                                type="hidden"
+                                                name="ano"
+                                                value="{{ ano }}"
+                                            >
+
+                                            <button
+                                                type="submit"
+                                                class="action-button delete-button"
+                                            >
+                                                Excluir
+                                            </button>
+
+                                        </form>
+
+                                    </div>
+
+                                </div>
+
+                            </article>
+
+                        {% endfor %}
+
+                    </div>
+
+                {% else %}
+
+                    <div class="empty-state">
+
+                        <div class="empty-icon">
+                            🛒
+                        </div>
+
+                        <h3>
+                            Sua compra está vazia
+                        </h3>
+
+                        <p>
+                            Adicione os produtos conforme
+                            coloca cada item no carrinho.
+                        </p>
+
+                    </div>
+
+                {% endif %}
+
+            </section>
+
+        </div>
+
+
+        <section class="card category-summary">
+
+            <div class="category-summary-header">
+
+                <div>
+                    <span class="section-label">
+                        RESUMO
+                    </span>
+
+                    <h2>
+                        Gastos por categoria
+                    </h2>
+                </div>
+
+
+                {% if maior_categoria %}
+
+                    <div class="top-category">
+
+                        <span>
+                            Maior gasto
+                        </span>
+
+                        <strong>
+                            {{ maior_categoria.nome }}
+                        </strong>
+
+                    </div>
+
+                {% endif %}
+
+            </div>
+
+
+            {% if produtos %}
+
+                <div class="category-list">
+
+                    {% for categoria in resumo_categorias %}
+
+                        {% if categoria.total_centavos > 0 %}
+
+                            <div class="category-item">
+
+                                <div class="category-info">
+
+                                    <span>
+                                        {{ categoria.nome }}
+                                    </span>
+
+                                    <strong>
+                                        {{ categoria.total_formatado }}
+                                    </strong>
+
+                                </div>
+
+
+                                <div class="category-bar">
+
+                                    <div
+                                        class="category-bar-value"
+                                        data-category-progress="{{ categoria.porcentagem }}"
+                                    ></div>
+
+                                </div>
+
+
+                                <span class="category-percentage">
+                                    {{ "%.1f"|format(categoria.porcentagem)|replace(".", ",") }}%
+                                    do total
+                                </span>
+
+                            </div>
+
+                        {% endif %}
+
+                    {% endfor %}
+
+                </div>
+
+            {% else %}
+
+                <div class="category-empty">
+
+                    <p>
+                        Adicione produtos para visualizar
+                        os gastos por categoria.
+                    </p>
+
+                </div>
+
+            {% endif %}
+
+        </section>
+
+    </div>
+
+
+    <div
+        class="modal-overlay"
+        id="budget-modal"
+    >
+
+        <div class="modal">
+
+            <div class="modal-header">
+
+                <div>
+                    <span class="section-label">
+                        ORÇAMENTO
+                    </span>
+
+                    <h2>
+                        Definir orçamento
+                    </h2>
+                </div>
+
+
+                <button
+                    type="button"
+                    class="close-modal"
+                    id="close-budget"
+                >
+                    ×
+                </button>
+
+            </div>
+
+
+            <p class="modal-description">
+                Informe quanto você pretende
+                gastar nas compras deste mês.
+            </p>
+
+
+            <form
+                action="{{ url_for('atualizar_orcamento') }}"
+                method="POST"
+            >
+
+                <input
+                    type="hidden"
+                    name="mes"
+                    value="{{ mes }}"
+                >
+
+                <input
+                    type="hidden"
+                    name="ano"
+                    value="{{ ano }}"
+                >
+
+
+                <div class="form-group">
+
+                    <label for="budget-input">
+                        Valor
+                    </label>
+
+                    <input
+                        type="text"
+                        id="budget-input"
+                        name="orcamento"
+                        placeholder="Ex: 800,00"
+                        inputmode="decimal"
+                        required
+                    >
+
+                </div>
+
+
+                <button
+                    type="submit"
+                    class="add-button modal-save"
+                >
+                    Salvar orçamento
+                </button>
+
+            </form>
+
+        </div>
+
+    </div>
+
+
+    <div
+        class="modal-overlay"
+        id="edit-modal"
+    >
+
+        <div class="modal">
+
+            <div class="modal-header">
+
+                <div>
+                    <span class="section-label">
+                        PRODUTO
+                    </span>
+
+                    <h2>
+                        Editar produto
+                    </h2>
+                </div>
+
+
+                <button
+                    type="button"
+                    class="close-modal"
+                    id="close-edit"
+                >
+                    ×
+                </button>
+
+            </div>
+
+
+            <p class="modal-description">
+                Altere as informações do item.
+            </p>
+
+
+            <form
+                id="edit-form"
+                method="POST"
+                class="product-form"
+            >
+
+                <input
+                    type="hidden"
+                    name="mes"
+                    value="{{ mes }}"
+                >
+
+                <input
+                    type="hidden"
+                    name="ano"
+                    value="{{ ano }}"
+                >
+
+
+                <div class="form-group">
+
+                    <label for="edit-product">
+                        Produto
+                    </label>
+
+                    <input
+                        type="text"
+                        id="edit-product"
+                        name="produto"
+                        required
+                    >
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="edit-category">
+                        Categoria
+                    </label>
+
+                    <select
+                        id="edit-category"
+                        name="categoria"
+                    >
+
+                        <option value="Alimentação">
+                            Alimentação
+                        </option>
+
+                        <option value="Limpeza">
+                            Limpeza
+                        </option>
+
+                        <option value="Higiene">
+                            Higiene
+                        </option>
+
+                        <option value="Bebidas">
+                            Bebidas
+                        </option>
+
+                        <option value="Outros">
+                            Outros
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <div class="form-row">
+
+                    <div class="form-group">
+
+                        <label for="edit-price">
+                            Preço
+                        </label>
+
+                        <input
+                            type="text"
+                            id="edit-price"
+                            name="preco"
+                            inputmode="decimal"
+                            required
+                        >
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label for="edit-quantity">
+                            Quantidade
+                        </label>
+
+                        <input
+                            type="number"
+                            id="edit-quantity"
+                            name="quantidade"
+                            min="1"
+                            required
+                        >
+
+                    </div>
+
+                </div>
+
+
+                <button
+                    type="submit"
+                    class="add-button modal-save"
+                >
+                    Salvar alterações
+                </button>
+
+            </form>
+
+        </div>
+
+    </div>
+
+
+    <script
+        src="{{ url_for('static', filename='js/app.js') }}"
+    ></script>
+
+</body>
+
+</html>
